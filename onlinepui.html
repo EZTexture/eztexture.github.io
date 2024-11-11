@@ -12,21 +12,23 @@
         <nav>
             <a href="index.html">Home</a>
             <a href="onlinepui.html">Online Editor</a>
+            <a href="https://github.com/EZTexture/EZTexture/releases/download/v1.0-beta.1/EZTextureSetup.exe">Download</a>
         </nav>
     </header>
     
     <main>
         <section>
-            <h2>Create Your Minecraft Textures Easily</h2>
+            <h2>Create game textures easily</h2>
             <input type="color" id="colorPicker" value="#ff0000">
-            <select id="canvasSizeSelector">
-                <option value="16">16x16</option>
-                <option value="32">32x32</option>
-                <option value="64">64x64</option>
-            </select>
-            <br>
+            <input type="file" id="imageUpload" accept="image/*">
+            <button id="save16x16">Save as 16x16</button>
             <button onclick="clearCanvas()">Clear Canvas</button>
-            <button onclick="downloadTexture()">Download Texture</button>
+            <select id="canvasSizeSelector">
+              <option value="16">16x16</option>
+              <option value="downloadHRes">Download the app for higher resolutions!</option>
+            </select>
+            
+            <br>
             <canvas id="textureCanvas"></canvas>
         </section>
     </main>
