@@ -4,11 +4,8 @@ let isDrawing = false;
 let currentColor = document.getElementById('colorPicker').value;
 let cellSize = 16; // Default to 16x16 grid
 
-canvas.width = cellSize * 16;
-canvas.height = cellSize * 16;
-
-canvas.width = 16 * 16;
-canvas.height = 16 * 16;
+// Set initial canvas size
+updateCanvasSize(cellSize);
 
 // Color picker event
 document.getElementById('colorPicker').addEventListener('input', (e) => {
@@ -50,9 +47,9 @@ function clearCanvas() {
 
 function updateCanvasSize(size) {
     cellSize = size;
-    canvas.width = size * 16;
-    canvas.height = size * 16;
-    clearCanvas();
+    canvas.width = size;
+    canvas.height = size;
+    clearCanvas(); // Clear canvas when resizing
 }
 
 function loadTexture(event) {

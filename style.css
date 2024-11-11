@@ -51,7 +51,7 @@ section h2 {
 }
 
 #textureCanvas {
-    border: 2px solid #ffffff;
+    border: 2px solid #ffffff; /* Just a border around the entire canvas */
     margin-top: 20px;
     cursor: crosshair;
 }
