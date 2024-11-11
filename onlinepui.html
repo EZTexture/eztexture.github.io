@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EZTexture - Minecraft Texture Editor</title>
+    <title>EZTexture Online Texture Editor</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>EZTexture</h1>
+        <h1>TexturePro Online Editor</h1>
         <nav>
             <a href="index.html">Home</a>
             <a href="onlinepui.html">Online Editor</a>
@@ -16,18 +16,16 @@
     </header>
     
     <main>
-        <section>
-            <h2>Create Your Minecraft Textures Easily</h2>
-            <input type="color" id="colorPicker" value="#ff0000">
-            <select id="canvasSizeSelector">
-                <option value="16">16x16</option>
-                <option value="32">32x32</option>
-                <option value="64">64x64</option>
-                <option value="128">128x128</option>
-            </select>
-            <button onclick="clearCanvas()">Clear Canvas</button>
-            <button onclick="downloadTexture()">Download Texture</button>
-            <canvas id="textureCanvas"></canvas>
+        <section id="editor">
+            <h2>Online Texture Editor</h2>
+            <input type="file" id="upload" accept="image/*" onchange="loadTexture(event)">
+            <div id="tools">
+                <input type="color" id="colorPicker" value="#ff0000">
+                <button onclick="toggleGrid()">Toggle Grid</button>
+                <button onclick="clearCanvas()">Clear</button>
+                <button onclick="downloadTexture()">Download Texture</button>
+            </div>
+            <canvas id="textureCanvas" width="512" height="512"></canvas>
         </section>
     </main>
 

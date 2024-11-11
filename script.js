@@ -7,6 +7,9 @@ let cellSize = 16; // Default to 16x16 grid
 canvas.width = cellSize * 16;
 canvas.height = cellSize * 16;
 
+canvas.width = 16 * 16;
+canvas.height = 16 * 16;
+
 // Color picker event
 document.getElementById('colorPicker').addEventListener('input', (e) => {
     currentColor = e.target.value;
