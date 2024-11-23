@@ -1,9 +1,50 @@
+let isBackgroundVisible = true;  // Track if the background image is visible or hidden
+let originalBackgroundImage = "url('Untitled_75.png')";  // Store the original background image URL
+let backgroundColor = '#2c3e50';  // Color to set when the background is hidden (dark mode color, for example)
+
+// Set the default background image when the page loads
+window.onload = function() {
+    const canvas = document.getElementById('textureCanvas');
+    canvas.style.backgroundImage = originalBackgroundImage;  // Set the background image
+    canvas.style.backgroundSize = '324px 324px';  // Ensure the background size is correct
+    canvas.style.backgroundPosition = 'center';  // Center the background image
+};
+
+// Function to toggle the canvas background
+document.getElementById('toggleCanvasBackground').addEventListener('click', function() {
+    const canvas = document.getElementById('textureCanvas');
+    const button = document.getElementById('toggleCanvasBackground');
+    
+    if (isBackgroundVisible) {
+        // Hide the background (set to solid color)
+        canvas.style.backgroundImage = '';  // Remove the background image
+        canvas.style.backgroundColor = backgroundColor;  // Set the background to the solid color
+
+        button.innerText = 'Show Canvas Background';  // Change button text to "Show"
+    } else {
+        // Show the background image again
+        canvas.style.backgroundImage = originalBackgroundImage;  // Set the background image
+        canvas.style.backgroundSize = '324px 324px';  // Ensure the background size is correct
+        canvas.style.backgroundPosition = 'center';  // Center the background image
+
+        button.innerText = 'Hide Canvas Background';  // Change button text to "Hide"
+    }
+
+    // Toggle the visibility state
+    isBackgroundVisible = !isBackgroundVisible;
+});
+
+// Rest of the code remains unchanged
 const canvas = document.getElementById('textureCanvas');
 const ctx = canvas.getContext('2d');
 let isDrawing = false;
 let currentColor = document.getElementById('colorPicker').value;
 let gridResolution = 16; // Default grid resolution
 let scaleFactor = 20; // Scale each "pixel" to be 20x20 on screen
+
+let layers = [
+    { id: 0, name: "Layer 1", content: [] },
+];
 
 // Initialize canvas size
 updateCanvasSize(gridResolution);
@@ -38,7 +79,6 @@ document.getElementById("imageUpload").addEventListener("change", function(event
                 const width = canvas.width;
                 const height = width / aspectRatio; // Maintain aspect ratio
                 ctx.drawImage(img, 0, 0, width, height);
-                // Resize image to fit within the canvas resolution
                 scaleImageToGrid(img, gridResolution);
             };
             img.src = e.target.result;
@@ -81,11 +121,9 @@ function scaleImageToGrid(img, resolution) {
     const imageHeight = img.height;
     const aspectRatio = imageWidth / imageHeight;
 
-    // Resize to fit within the grid
     const newWidth = resolution * scaleFactor;
     const newHeight = newWidth / aspectRatio;
 
-    // Resize image and draw on canvas
     canvas.width = newWidth;
     canvas.height = newHeight;
     ctx.drawImage(img, 0, 0, newWidth, newHeight);
@@ -104,16 +142,24 @@ function draw(e) {
     const x = Math.floor((e.clientX - rect.left) / scaleFactor) * scaleFactor;
     const y = Math.floor((e.clientY - rect.top) / scaleFactor) * scaleFactor;
     ctx.fillRect(x, y, scaleFactor, scaleFactor);
+
+    // Update the layer content when drawing
+    const currentLayer = layers.find(layer => layer.id === 0); // Assuming 0 is the active layer
+    currentLayer.content.push({ x, y, color: currentColor });
 }
 
+// Stop drawing
 function stopDrawing() {
     isDrawing = false;
 }
 
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Redraw all layers
+    layers.forEach(layer => drawLayer(layer));
 }
 
+// Update canvas size
 function updateCanvasSize(resolution) {
     scaleFactor = Math.max(320 / resolution, 10); // Adjust scale to keep pixels visible
     canvas.width = resolution * scaleFactor;
@@ -121,17 +167,129 @@ function updateCanvasSize(resolution) {
     clearCanvas();
 }
 
-// Check resolution before allowing selection
-document.getElementById("canvasSizeSelector").addEventListener("change", function() {
-    var selectedValue = this.value;
+// Layer Support - Add new layer
+function addLayer() {
+    const newLayer = { id: layers.length, name: `Layer ${layers.length + 1}`, content: [] };
+    layers.push(newLayer);
+    updateLayerUI();
+}
 
-    if (selectedValue === "64" || selectedValue === "128" || selectedValue === "32") {
-        alert("Download EZTexture for Windows to access high resolutions.");
-        this.value = "16";  // Reset to 16x16 or your preferred default
-        gridResolution = 16;
-        updateCanvasSize(gridResolution);
+// Remove Layer
+function removeLayer(layerId) {
+    layers = layers.filter(layer => layer.id !== layerId);
+    updateLayerUI();
+}
+
+// Draw layer content on canvas
+function drawLayer(layer) {
+    layer.content.forEach(item => {
+        ctx.fillStyle = item.color;
+        ctx.fillRect(item.x, item.y, scaleFactor, scaleFactor);
+    });
+}
+
+function updateLayerUI() {
+    const layerList = document.getElementById('layerList');
+    layerList.innerHTML = '';
+    layers.forEach(layer => {
+        const layerElement = document.createElement('div');
+        layerElement.textContent = layer.name;
+        layerElement.onclick = () => toggleLayer(layer.id);
+        layerList.appendChild(layerElement);
+    });
+}
+
+// Toggle Layer visibility or editability
+function toggleLayer(layerId) {
+    const layer = layers.find(layer => layer.id === layerId);
+    if (layer) {
+        console.log(`Toggled layer ${layerId}`);
+        // You can add logic to toggle layer visibility here
+    }
+}
+
+// Set Dark Mode by default
+let isDarkMode = true;
+document.body.classList.add('dark-mode'); // Add dark mode class by default
+
+// Toggle Dark Mode
+function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('modeToggle').innerHTML = '<button onclick="toggleDarkMode()">Switch to Light Mode</button>';
     } else {
-        gridResolution = parseInt(selectedValue);
-        updateCanvasSize(gridResolution);
+        document.body.classList.remove('dark-mode');
+        document.getElementById('modeToggle').innerHTML = '<button onclick="toggleDarkMode()">Switch to Dark Mode</button>';
+    }
+}
+
+// Dark Mode Button in the UI
+document.getElementById('modeToggle').innerHTML = '<button onclick="toggleDarkMode()">Switch to Light Mode</button>';
+
+
+// Keyboard Shortcuts
+document.addEventListener('keydown', (e) => {
+    switch (e.key) {
+        case 'z': // Undo
+            if (e.ctrlKey) {
+                undoAction();
+            }
+            break;
+        case 'y': // Redo
+            if (e.ctrlKey) {
+                redoAction();
+            }
+            break;
+        case 'c': // Clear Canvas
+            if (e.ctrlKey) {
+                clearCanvas();
+            }
+            break;
+        case 's': // Save Canvas
+            if (e.ctrlKey) {
+                saveCanvas();
+            }
+            break;
+        default:
+            break;
     }
 });
+
+// Undo/Redo actions
+let actionHistory = [];
+let currentActionIndex = -1;
+
+function undoAction() {
+    if (currentActionIndex > 0) {
+        currentActionIndex--;
+        loadCanvasFromHistory();
+    }
+}
+
+function redoAction() {
+    if (currentActionIndex < actionHistory.length - 1) {
+        currentActionIndex++;
+        loadCanvasFromHistory();
+    }
+}
+
+function loadCanvasFromHistory() {
+    const canvas = document.getElementById('textureCanvas');
+    const ctx = canvas.getContext('2d');
+    const action = actionHistory[currentActionIndex];
+    ctx.putImageData(action, 0, 0);
+}
+
+// Save canvas state for undo functionality
+function saveCanvasState() {
+    const canvas = document.getElementById('textureCanvas');
+    const ctx = canvas.getContext('2d');
+    actionHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    currentActionIndex = actionHistory.length - 1;
+}
+
+// Call this function whenever an edit happens
+function onCanvasEdit() {
+    saveCanvasState();
+}

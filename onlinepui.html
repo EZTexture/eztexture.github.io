@@ -7,35 +7,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>EZTexture</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="onlinepui.html">Online Editor</a>
-            <a href="https://github.com/EZTexture/EZTexture/releases/download/v1.0-beta.1/EZTextureSetup.exe">Download</a>
-        </nav>
-    </header>
-    
+
     <main>
         <section>
-            <h2>Create game textures easily</h2>
+            <h2>EZTexture Editor <p>v2.16.2</p></h2>
             <input type="color" id="colorPicker" value="#ff0000">
-            <input type="file" id="imageUpload" accept="image/*">
+            <input type="file" id="imageUpload" accept="image/*"> <br>
             <button id="save16x16">Save as 16x16</button>
-            <button onclick="clearCanvas()">Clear Canvas</button>
+            <button onclick="clearCanvas()">Clear Canvas</button> <br>
             <select id="canvasSizeSelector">
               <option value="16">16x16</option>
-              <option value="16">Download the app for higher resolutions!</option>
+              <option value="16">Download the app for more resolutions and features.</option>
             </select>
             
             <br>
-            <canvas id="textureCanvas"></canvas>
+            <canvas id="textureCanvas"></canvas> <br>
+            <button id="toggleCanvasBackground">Hide Canvas Background</button>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2024 EZTexture. All rights reserved.</p>
-    </footer>
 
     <script src="script.js"></script>
 </body>

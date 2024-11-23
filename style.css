@@ -5,28 +5,35 @@
     font-family: Arial, sans-serif;
 }
 
-body {
+body, html {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;  /* Full height of the viewport */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: #000000;
-    color: #ffffff;
+    justify-content: center;  /* Vertically center content */
+    align-items: center;  /* Horizontally center content */
+    background-color: #181818;  /* Dark background */
+    color: white;  /* Light text color */
 }
 
-header {
-    text-align: center;
-    margin-bottom: 20px;
+/* Dark Mode Styles */
+header, footer {
+    background-color: #242424;  /* Dark header/footer */
+    color: white;
+    width: 100%;
+    text-align: center;  /* Center header and footer text */
 }
 
 header h1 {
     font-size: 2.5em;
-    color: #ffffff;
+    color: white;
 }
 
 header nav a {
     margin: 0 10px;
-    color: #007acc;
+    color: #00aaff;  /* Light blue links */
     text-decoration: none;
 }
 
@@ -47,17 +54,81 @@ section {
 section h2 {
     font-size: 1.8em;
     margin-bottom: 10px;
-    color: #ffffff;
+    color: white;  /* Section title color */
 }
 
 #textureCanvas {
-    border: 2px solid #ffffff; /* White outline around the entire canvas */
+    border: 2px solid #ffffff;  /* White border for canvas */
     margin-top: 20px;
     cursor: crosshair;
+    background-size: 324px 324px;
+    max-width: 100%;
+    max-height: 80vh;  /* Make sure canvas doesn't overflow vertically */
 }
 
 footer {
     margin-top: 20px;
     font-size: 0.8em;
+    color: #ffffff;
+}
+
+/* Dark Mode Button Styles */
+button {
+    background-color: #0077cc;  /* Blue button */
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 16px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: #005fa3;
+    border-radius: 16px;
+}
+
+button:focus {
+    outline: none;
+    border-radius: 16px;
+}
+
+/* Customize the color picker for both modes */
+input[type="color"] {
+    border: 2px solid #0077cc;
+    padding: 5px;
+}
+
+/* Canvas border color */
+canvas {
+    border: 4px solid blue;  /* Blue border for visibility */
+}
+
+/* For accessibility or preference, you can set dark mode explicitly */
+body.dark-mode {
+    background-color: #181818;  /* Ensure background is dark */
+    color: white;  /* Ensure text is white */
+}
+
+header.dark-mode, footer.dark-mode {
+    background-color: #242424;  /* Ensure header/footer stays dark */
+}
+
+header nav a.dark-mode {
+    color: #00aaff;
+}
+
+button.dark-mode {
+    background-color: #0077cc;
+    color: white;
+    border-radius: 16px;
+}
+
+button.dark-mode:hover {
+    background-color: #005fa3;
+    border-radius: 16px;
+}
+
+footer.dark-mode {
     color: #ffffff;
 }
