@@ -1,135 +1,84 @@
-let isBackgroundVisible = true;  // Track if the background image is visible or hidden
-let originalBackgroundImage = "url('Untitled_75.png')";  // Store the original background image URL
-let backgroundColor = '#2c3e50';  // Color to set when the background is hidden (dark mode color, for example)
+// Track if the background image is visible or hidden
+let isBackgroundVisible = true;
+const originalBackgroundImage = "url('Untitled_75.png')"; // Original background image URL
+const backgroundColor = '#2c3e50'; // Default dark mode color
 
-// Set the default background image when the page loads
-window.onload = function() {
-    const canvas = document.getElementById('textureCanvas');
-    canvas.style.backgroundImage = originalBackgroundImage;  // Set the background image
-    canvas.style.backgroundSize = '324px 324px';  // Ensure the background size is correct
-    canvas.style.backgroundPosition = 'center';  // Center the background image
-};
-
-// Function to toggle the canvas background
-document.getElementById('toggleCanvasBackground').addEventListener('click', function() {
-    const canvas = document.getElementById('textureCanvas');
-    const button = document.getElementById('toggleCanvasBackground');
-    
-    if (isBackgroundVisible) {
-        // Hide the background (set to solid color)
-        canvas.style.backgroundImage = '';  // Remove the background image
-        canvas.style.backgroundColor = backgroundColor;  // Set the background to the solid color
-
-        button.innerText = 'Show Canvas Background';  // Change button text to "Show"
-    } else {
-        // Show the background image again
-        canvas.style.backgroundImage = originalBackgroundImage;  // Set the background image
-        canvas.style.backgroundSize = '324px 324px';  // Ensure the background size is correct
-        canvas.style.backgroundPosition = 'center';  // Center the background image
-
-        button.innerText = 'Hide Canvas Background';  // Change button text to "Hide"
-    }
-
-    // Toggle the visibility state
-    isBackgroundVisible = !isBackgroundVisible;
-});
-
-// Rest of the code remains unchanged
+// Global variables
 const canvas = document.getElementById('textureCanvas');
 const ctx = canvas.getContext('2d');
 let isDrawing = false;
 let currentColor = document.getElementById('colorPicker').value;
 let gridResolution = 16; // Default grid resolution
-let scaleFactor = 20; // Scale each "pixel" to be 20x20 on screen
+let scaleFactor = 20; // Each "pixel" size on the screen
+let layers = [{ id: 0, name: "Layer 1", content: [] }];
 
-let layers = [
-    { id: 0, name: "Layer 1", content: [] },
-];
+// Initialize UI and canvas
+window.onload = function () {
+    initializeCanvas();
+    initializeUI();
+};
 
-// Initialize canvas size
-updateCanvasSize(gridResolution);
-
-// Update current color
-document.getElementById('colorPicker').addEventListener('input', (e) => {
-    currentColor = e.target.value;
-});
-
-// Update canvas size and scale based on selection
-document.getElementById('canvasSizeSelector').addEventListener('change', (e) => {
-    gridResolution = parseInt(e.target.value);
-    updateCanvasSize(gridResolution);
-});
-
-// Drawing events
-canvas.addEventListener('mousedown', startDrawing);
-canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', stopDrawing);
-canvas.addEventListener('mouseleave', stopDrawing);
-
-// Image upload functionality
-document.getElementById("imageUpload").addEventListener("change", function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                clearCanvas();
-                const aspectRatio = img.width / img.height;
-                const width = canvas.width;
-                const height = width / aspectRatio; // Maintain aspect ratio
-                ctx.drawImage(img, 0, 0, width, height);
-                scaleImageToGrid(img, gridResolution);
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-// Save functionality for 16x16 or 32x32
-document.getElementById("save16x16").addEventListener("click", function() {
-    saveCanvasAsImage(16);
-});
-
-document.getElementById("save32x32").addEventListener("click", function() {
-    saveCanvasAsImage(32);
-});
-
-// Helper function to save canvas as an image
+// Save the canvas as an image with a specific resolution
 function saveCanvasAsImage(resolution) {
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
 
-    // Set temp canvas size based on resolution
-    tempCanvas.width = resolution * scaleFactor;
-    tempCanvas.height = resolution * scaleFactor;
+    tempCanvas.width = resolution;
+    tempCanvas.height = resolution;
 
-    // Draw the image from the main canvas to the temp canvas
-    tempCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, tempCanvas.width, tempCanvas.height);
+    tempCtx.imageSmoothingEnabled = false;
+    tempCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, resolution, resolution);
 
-    // Create a link to download the image
     const link = document.createElement('a');
     link.download = `texture_${resolution}x${resolution}.png`;
-    link.href = tempCanvas.toDataURL();
+    link.href = tempCanvas.toDataURL('image/png');
     link.click();
 }
 
-// Resize the uploaded image to fit the grid resolution (e.g., 16x16, 32x32)
-function scaleImageToGrid(img, resolution) {
-    const imageWidth = img.width;
-    const imageHeight = img.height;
-    const aspectRatio = imageWidth / imageHeight;
+// Initialize the canvas with default settings
+function initializeCanvas() {
+    canvas.style.backgroundImage = originalBackgroundImage;
+    canvas.style.backgroundSize = '320px 320px';
+    canvas.style.backgroundPosition = 'center';
 
-    const newWidth = resolution * scaleFactor;
-    const newHeight = newWidth / aspectRatio;
-
-    canvas.width = newWidth;
-    canvas.height = newHeight;
-    ctx.drawImage(img, 0, 0, newWidth, newHeight);
+    // Attach event listeners for drawing
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
 }
 
-// Drawing functions
+// Initialize UI elements
+function initializeUI() {
+    const toggleButton = document.getElementById('toggleCanvasBackground');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', toggleBackground);
+    } else {
+        console.error('Toggle button not found!');
+    }
+
+    document.getElementById('colorPicker').addEventListener('input', (e) => {
+        currentColor = e.target.value;
+    });
+
+    document.getElementById('save16x16').addEventListener('click', () => saveCanvasAsImage(16));
+}
+
+// Toggle canvas background visibility
+function toggleBackground() {
+    const button = document.getElementById('toggleCanvasBackground');
+    if (isBackgroundVisible) {
+        canvas.style.backgroundImage = '';
+        canvas.style.backgroundColor = backgroundColor;
+        button.innerText = 'Show Canvas Background';
+    } else {
+        canvas.style.backgroundImage = originalBackgroundImage;
+        canvas.style.backgroundColor = '';
+        button.innerText = 'Hide Canvas Background';
+    }
+    isBackgroundVisible = !isBackgroundVisible;
+}
+
 function startDrawing(e) {
     isDrawing = true;
     draw(e);
@@ -137,130 +86,76 @@ function startDrawing(e) {
 
 function draw(e) {
     if (!isDrawing) return;
+
     ctx.fillStyle = currentColor;
     const rect = canvas.getBoundingClientRect();
     const x = Math.floor((e.clientX - rect.left) / scaleFactor) * scaleFactor;
     const y = Math.floor((e.clientY - rect.top) / scaleFactor) * scaleFactor;
     ctx.fillRect(x, y, scaleFactor, scaleFactor);
 
-    // Update the layer content when drawing
-    const currentLayer = layers.find(layer => layer.id === 0); // Assuming 0 is the active layer
+    const currentLayer = layers.find(layer => layer.id === 0);
     currentLayer.content.push({ x, y, color: currentColor });
 }
 
-// Stop drawing
 function stopDrawing() {
     isDrawing = false;
 }
 
 function clearCanvas() {
-    const canvas = document.getElementById('textureCanvas');
-    const ctx = canvas.getContext('2d');
-
-    // Clear the entire canvas content (both the drawing and any background image)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Clear the layers' pixel content (resetting the layers)
-    layers.forEach(layer => {
-        layer.content = []; // Clear the content of each layer
-    });
-
-    // Reset the background based on its visibility state
+    layers.forEach(layer => layer.content = []);
     if (isBackgroundVisible) {
-        // If the background image is visible, restore it
         canvas.style.backgroundImage = originalBackgroundImage;
-        canvas.style.backgroundColor = ''; // Ensure background color is reset
     } else {
-        // If the background is hidden, reset to the solid color
-        canvas.style.backgroundImage = ''; // Remove the background image
-        canvas.style.backgroundColor = backgroundColor; // Set background to color
+        canvas.style.backgroundImage = '';
+    }
+}
+
+document.getElementById('exportPack').addEventListener('click', async () => {
+    const packName = document.getElementById('packName').value || 'My Resource Pack';
+    const logoFile = document.getElementById('packLogo').files[0];
+
+    // Grab user inputs for folder path and texture name
+    const folderPath = document.getElementById('folderSelector').value; // Selected folder path
+    const overrideName = document.getElementById('overrideName').value.trim(); // Block/item to override
+    const textureFilename = document.getElementById('textureFilename').value.trim(); // Texture name
+
+    // Validate inputs
+    if (!folderPath || !overrideName || !textureFilename) {
+        alert("Please specify the folder, the override name, and the texture filename.");
+        return;
     }
 
-    // Redraw all layers after clearing
-    layers.forEach(layer => drawLayer(layer));
-}
+    const zip = new JSZip();
 
-// Update canvas size
-function updateCanvasSize(resolution) {
-    scaleFactor = Math.max(320 / resolution, 10); // Adjust scale to keep pixels visible
-    canvas.width = resolution * scaleFactor;
-    canvas.height = resolution * scaleFactor;
-    clearCanvas();
-}
+    // Define the folder path dynamically
+    const textureFolder = zip.folder(`assets/minecraft/${folderPath}`);
 
-// Layer Support - Add new layer
-function addLayer() {
-    const newLayer = { id: layers.length, name: `Layer ${layers.length + 1}`, content: [] };
-    layers.push(newLayer);
-    updateLayerUI();
-}
+    // Draw canvas content to a texture file
+    const canvasData = canvas.toDataURL('image/png');
+    const textureBlob = await (await fetch(canvasData)).blob();
+    textureFolder.file(textureFilename, textureBlob); // Use the specified texture name
 
-// Remove Layer
-function removeLayer(layerId) {
-    layers = layers.filter(layer => layer.id !== layerId);
-    updateLayerUI();
-}
+    // Add pack metadata
+    const packMeta = {
+        pack: {
+            pack_format: 42,
+            description: packName,
+        },
+    };
+    zip.file('pack.mcmeta', JSON.stringify(packMeta, null, 2));
 
-// Draw layer content on canvas
-function drawLayer(layer) {
-    layer.content.forEach(item => {
-        ctx.fillStyle = item.color;
-        ctx.fillRect(item.x, item.y, scaleFactor, scaleFactor);
+    // Optionally include the logo file if uploaded
+    if (logoFile) {
+        const logoBlob = await logoFile.arrayBuffer();
+        zip.file('pack.png', logoBlob);
+    }
+
+    // Generate the zip file
+    zip.generateAsync({ type: 'blob' }).then(blob => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${packName}.zip`;
+        link.click();
     });
-}
-
-function updateLayerUI() {
-    const layerList = document.getElementById('layerList');
-    layerList.innerHTML = '';
-    layers.forEach(layer => {
-        const layerElement = document.createElement('div');
-        layerElement.textContent = layer.name;
-        layerElement.onclick = () => toggleLayer(layer.id);
-        layerList.appendChild(layerElement);
-    });
-}
-
-// Toggle Layer visibility or editability
-function toggleLayer(layerId) {
-    const layer = layers.find(layer => layer.id === layerId);
-    if (layer) {
-        console.log(`Toggled layer ${layerId}`);
-        // You can add logic to toggle layer visibility here
-    }
-}
-
-// Set Dark Mode by default
-let isDarkMode = true;
-document.body.classList.add('dark-mode'); // Add dark mode class by default
-
-// Toggle Dark Mode
-function toggleDarkMode() {
-    isDarkMode = !isDarkMode;
-    if (isDarkMode) {
-        document.body.classList.add('dark-mode');
-        document.getElementById('modeToggle').innerHTML = '<button onclick="toggleDarkMode()">Switch to Light Mode</button>';
-    } else {
-        document.body.classList.remove('dark-mode');
-        document.getElementById('modeToggle').innerHTML = '<button onclick="toggleDarkMode()">Switch to Dark Mode</button>';
-    }
-}
-
-// Dark Mode Button in the UI
-document.getElementById('modeToggle').innerHTML = '<button onclick="toggleDarkMode()">Switch to Light Mode</button>';
-
-
-// Keyboard Shortcuts
-document.addEventListener('keydown', (e) => {
-    switch (e.key) {
-        case 'z': // Undo
-            if (e.ctrlKey) {
-                undoAction();
-            }
-            break;
-        case 'e': // Clear canvas
-            if (e.ctrlKey) {
-                clearCanvas();
-            }
-            break;
-    }
 });

@@ -57,14 +57,18 @@ section h2 {
     color: white;  /* Section title color */
 }
 
-#textureCanvas {
-    border: 2px solid #ffffff;  /* White border for canvas */
-    margin-top: 20px;
-    cursor: crosshair;
-    background-size: 324px 324px;
-    max-width: 100%;
-    max-height: 80vh;  /* Make sure canvas doesn't overflow vertically */
+/* style.css */
+canvas#textureCanvas {
+    display: block;
+    width: 324px; /* Scaled display size for better visibility */
+    height: 324px;
+    border: 1px solid #ccc; /* Optional: for better visibility of canvas boundaries */
+    margin: 10px auto; /* Center the canvas */
+    image-rendering: pixelated; /* Ensures crisp pixel art appearance */
+    image-rendering: -moz-crisp-edges; /* For Firefox */
+    image-rendering: crisp-edges; /* For Chrome and other browsers */
 }
+
 
 footer {
     margin-top: 20px;

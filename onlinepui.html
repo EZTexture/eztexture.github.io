@@ -7,26 +7,57 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <main>
         <section>
-            <h2>EZTexture Editor <p>v2.16.3</p></h2>
-            <input type="color" id="colorPicker" value="#ff0000">
+            <br>
+            <br>
+            <br>
+            <h2>EZTexture Editor <p>v2.17.0</p></h2>
+            <input type="color" id="colorPicker" value="#ff0000"> <br>
             <input type="file" id="imageUpload" accept="image/*"> <br>
             <button id="save16x16">Save as 16x16</button>
             <button onclick="clearCanvas()">Clear Canvas</button> <br>
-            <select id="canvasSizeSelector">
-              <option value="16">16x16</option>
-              <option value="16">Download the app for more resolutions and features.</option>
-            </select>
+            <canvas id="textureCanvas" width="320" height="320"></canvas> <br>
+            <button id="toggleCanvasBackground">Hide Canvas Background</button> <br>
             
-            <br>
-            <canvas id="textureCanvas"></canvas> <br>
-            <button id="toggleCanvasBackground">Hide Canvas Background</button>
+            <h3>Export Resource Pack</h3>
+<label for="packName">Pack Name:</label>
+<input type="text" id="packName" placeholder="My Resource Pack"> <br>
+
+<label for="packLogo">Upload Pack Logo (pack.png):</label>
+<input type="file" id="packLogo" accept="image/png"> <br>
+
+<label for="overrideName">Block/Item Name:</label>
+<input type="text" id="overrideName" placeholder="netherite_ingot"> <br>
+
+<label for="folderSelector">Select Texture Folder:</label>
+<select id="folderSelector">
+    <option value="textures/block">textures/block</option>
+    <option value="textures/effect">textures/effect</option>
+    <option value="textures/entity">textures/entity</option>
+    <option value="textures/font">textures/font</option>
+    <option value="textures/environment">textures/environment</option>
+    <option value="textures/gui">textures/gui</option>
+    <option value="textures/item">textures/item</option>
+    <option value="textures/map">textures/map</option>
+    <option value="textures/misc">textures/misc</option>
+    <option value="textures/mob_effect">textures/mob_effect</option>
+    <option value="textures/models/armor">textures/models/armor</option>
+    <option value="textures/painting">textures/painting</option>
+    <option value="textures/particle">textures/particle</option>
+    <option value="textures/trims/color_palettes">textures/trims/color_palettes</option>
+    <option value="textures/trims/items">textures/trims/items</option>
+    <option value="textures/trims/models/armor">textures/trims/models/armor</option>
+</select> <br>
+
+<label for="textureFilename">Texture Filename:</label>
+<input type="text" id="textureFilename" placeholder="custom_texture.png"> <br>
+
+<button id="exportPack">Export to Minecraft</button>
         </section>
     </main>
-
-
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
