@@ -154,8 +154,29 @@ function stopDrawing() {
 }
 
 function clearCanvas() {
+    const canvas = document.getElementById('textureCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Clear the entire canvas content (both the drawing and any background image)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // Redraw all layers
+
+    // Clear the layers' pixel content (resetting the layers)
+    layers.forEach(layer => {
+        layer.content = []; // Clear the content of each layer
+    });
+
+    // Reset the background based on its visibility state
+    if (isBackgroundVisible) {
+        // If the background image is visible, restore it
+        canvas.style.backgroundImage = originalBackgroundImage;
+        canvas.style.backgroundColor = ''; // Ensure background color is reset
+    } else {
+        // If the background is hidden, reset to the solid color
+        canvas.style.backgroundImage = ''; // Remove the background image
+        canvas.style.backgroundColor = backgroundColor; // Set background to color
+    }
+
+    // Redraw all layers after clearing
     layers.forEach(layer => drawLayer(layer));
 }
 
@@ -236,60 +257,10 @@ document.addEventListener('keydown', (e) => {
                 undoAction();
             }
             break;
-        case 'y': // Redo
-            if (e.ctrlKey) {
-                redoAction();
-            }
-            break;
-        case 'c': // Clear Canvas
+        case 'e': // Clear canvas
             if (e.ctrlKey) {
                 clearCanvas();
             }
             break;
-        case 's': // Save Canvas
-            if (e.ctrlKey) {
-                saveCanvas();
-            }
-            break;
-        default:
-            break;
     }
 });
-
-// Undo/Redo actions
-let actionHistory = [];
-let currentActionIndex = -1;
-
-function undoAction() {
-    if (currentActionIndex > 0) {
-        currentActionIndex--;
-        loadCanvasFromHistory();
-    }
-}
-
-function redoAction() {
-    if (currentActionIndex < actionHistory.length - 1) {
-        currentActionIndex++;
-        loadCanvasFromHistory();
-    }
-}
-
-function loadCanvasFromHistory() {
-    const canvas = document.getElementById('textureCanvas');
-    const ctx = canvas.getContext('2d');
-    const action = actionHistory[currentActionIndex];
-    ctx.putImageData(action, 0, 0);
-}
-
-// Save canvas state for undo functionality
-function saveCanvasState() {
-    const canvas = document.getElementById('textureCanvas');
-    const ctx = canvas.getContext('2d');
-    actionHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-    currentActionIndex = actionHistory.length - 1;
-}
-
-// Call this function whenever an edit happens
-function onCanvasEdit() {
-    saveCanvasState();
-}
