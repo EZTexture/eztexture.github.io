@@ -1,6 +1,6 @@
 let isBackgroundVisible = true;
 let originalBackgroundImage = "url('Untitled_75.png')";
-let backgroundColor = '#2c3e50';
+let backgroundColor = '#2E2E2E';
 let currentProfile = {};
 
 // Default settings for canvas and buttons
